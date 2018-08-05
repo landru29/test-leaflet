@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Leaflet test</title>
+  <link rel="stylesheet" href="node_modules/leaflet/dist/leaflet.css">
+</head>
+<body>
+
+  <div id="map"></div>
+  <% for (var i=0; i<htmlWebpackPlugin.files.js.length; i++) { %>
+    <script src="<%= htmlWebpackPlugin.files.js[i].path %>"></script>
+  <% } %>
+</body>
+</html>
