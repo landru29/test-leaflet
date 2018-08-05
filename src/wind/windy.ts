@@ -1,5 +1,6 @@
 import * as L from 'leaflet';
 import * as _ from 'lodash';
+import { WindData } from './wind-data';
 
 export class Windy extends L.Layer {
     private canvas: HTMLCanvasElement = null;
@@ -40,30 +41,9 @@ export class Windy extends L.Layer {
 }
 
 export interface IWindyOptions extends L.LayerOptions {
-    data?: IWindData[];
+    data?: WindData;
     maxVelocity?: number;
     minVelocity?: number;
     velocityScale?: number;
 }
 
-
-export interface IWindData {
-    data: number[];
-    header: IWindDataHeader;
-}
-
-export interface IWindDataHeader {
-    dx: number;
-    dy: number;
-    la1: number;
-    la2: number;
-    lo1: number;
-    lo2: number;
-    nx: number;
-    ny: number;
-    parameterCategory: number;
-    parameterNumber: number;
-    parameterNumberName: string;
-    parameterUnit: number;
-    refTime: string;
-}

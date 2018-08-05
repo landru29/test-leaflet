@@ -1,7 +1,8 @@
 import * as L from 'leaflet';
-import { Windy, IWindData } from './wind/windy';
+import { Windy } from './wind/windy';
 import './map.scss';
 import * as $ from 'jquery';
+import { WindData } from './wind/wind-data';
 
 
 class MapView {
@@ -16,9 +17,9 @@ class MapView {
             .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
             .openPopup();
 
-        $.getJSON('wind000.json', (data: IWindData[]) => {
+        $.getJSON('wind000.json', (data: any) => {
             const layer = new Windy({
-                data,
+                data: new WindData(data),
                 maxVelocity: 15,
                 minVelocity: 0,
                 velocityScale: 0.01
