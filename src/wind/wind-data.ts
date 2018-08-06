@@ -2,21 +2,30 @@ import * as _ from 'lodash';
 import * as L from 'leaflet';
 
 export class WindData {
-    public axis: WindAxis[];
+    public UAxis: WindAxis;
+    public VAxis: WindAxis;
 
     constructor(apiData: any[]) {
-        this.axis = _.map(apiData, (data: any) => new WindAxis(data));
+        this.UAxis = new WindAxis(_.find(apiData, (data: any) => _.get(data, 'header.parameterNumber') === 2));
+        this.VAxis = new WindAxis(_.find(apiData, (data: any) => _.get(data, 'header.parameterNumber') === 3));
     }
 
-    getWindAd(position: L.LatLng) {
-
+    getWindAt(position: L.LatLng): Vector {
+        return new Vector(
+            this.UAxis.getValueAt(position),
+            this.VAxis.getValueAt(position),
+        );
     }
+    
+}
 
-    get header(): WindDataHeader {
-        return _.chain(this.axis)
-            .first()
-            .get('header')
-            .value();
+export class WindAxis {
+    data: number[];
+    header: WindDataHeader;
+
+    constructor(apiData: any) {
+        this.data = _.get(apiData, 'data', []);
+        this.header = new WindDataHeader(_.get(apiData, 'header', {}));
     }
 
     get deltaLat(): number {
@@ -50,15 +59,22 @@ export class WindData {
         }
         return [lat / this.header.dy, lng / this.header.dx];
     }
-}
 
-export class WindAxis {
-    data: number[];
-    header: WindDataHeader;
-
-    constructor(apiData: any) {
-        this.data = _.get(apiData, 'data', []);
-        this.header = new WindDataHeader(_.get(apiData, 'header', {}));
+    getValueAt(position: L.LatLng): number {
+        const index = this.positionToIndex(position);
+        const x = index[0] - Math.floor(index[0]);
+        const y = index[1] - Math.floor(index[1]);
+        const g00 = this.data[Math.floor(index[0]) * this.header.nx + Math.floor(index[1])];
+        const g01 = this.data[Math.ceil(index[0]) * this.header.nx + Math.floor(index[1])];
+        const g10 = this.data[Math.floor(index[0]) * this.header.nx + Math.ceil(index[1])];
+        const g11 = this.data[Math.ceil(index[0]) * this.header.nx + Math.ceil(index[1])]
+        const rx = (1 - x);
+        const ry = (1 - y);
+        const a = rx * ry;
+        const b = x * ry;
+        const c = rx * y;
+        const d = x * y;
+        return g00 * a + g10 * b + g01 * c + g11 * d;
     }
 }
 
@@ -81,3 +97,21 @@ export class WindDataHeader {
         _.extend(this, apiData);
     }
 }
+
+export class Vector {
+    public x: number = 0;
+    public y: number = 0;
+
+    constructor(x = 0, y = 0) {
+        this.x = x;
+        this.y = y;
+    }
+
+    get angle(): number {
+        return Math.atan2(this.x, this.y);
+    }
+
+    get value(): number {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
+} 

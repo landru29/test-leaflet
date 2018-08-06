@@ -12,12 +12,12 @@ describe('WindData', () => {
     });
 
     it('Should load data', () => {
-        expect(data.deltaLat).toBe(180);
-        expect(data.deltaLng).toBe(359);
+        expect(data.UAxis.deltaLat).toBe(180);
+        expect(data.UAxis.deltaLng).toBe(359);
     });
 
     it('Should get data index (lng negative)', () => {
-        const indexes = data.positionToIndex(new L.LatLng(-45.2, -30));
+        const indexes = data.UAxis.positionToIndex(new L.LatLng(-45.2, -30));
         expect(_.isArray(indexes)).toBeTruthy();
         expect(indexes.length).toBe(2);
         expect(indexes[0]).toBe(135.2);
@@ -25,10 +25,15 @@ describe('WindData', () => {
     });
 
     it('Should get data index (lng over 359)', () => {
-        const indexes = data.positionToIndex(new L.LatLng(10, 720));
+        const indexes = data.UAxis.positionToIndex(new L.LatLng(10, 720));
         expect(_.isArray(indexes)).toBeTruthy();
         expect(indexes.length).toBe(2);
         expect(indexes[0]).toBe(80);
         expect(indexes[1]).toBe(0);
-    })
+    });
+
+    it('Should get value on one axis', () => {
+        const value = data.UAxis.getValueAt(new L.LatLng(-13.037, -38.555));
+        expect(value.toFixed(3)).toBe('-0.564');
+    });
 })
