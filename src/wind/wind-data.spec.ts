@@ -34,6 +34,6 @@ describe('WindData', () => {
 
     it('Should get value on one axis', () => {
         const value = data.UAxis.getValueAt(new L.LatLng(-13.037, -38.555));
-        expect(value.toFixed(3)).toBe('-0.564');
+        expect(value.toFixed(3)).toBe('-2.334');
     });
 })

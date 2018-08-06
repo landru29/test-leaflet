@@ -62,17 +62,19 @@ export class WindAxis {
 
     getValueAt(position: L.LatLng): number {
         const index = this.positionToIndex(position);
-        const x = index[0] - Math.floor(index[0]);
-        const y = index[1] - Math.floor(index[1]);
-        const g00 = this.data[Math.floor(index[0]) * this.header.nx + Math.floor(index[1])];
-        const g01 = this.data[Math.ceil(index[0]) * this.header.nx + Math.floor(index[1])];
-        const g10 = this.data[Math.floor(index[0]) * this.header.nx + Math.ceil(index[1])];
-        const g11 = this.data[Math.ceil(index[0]) * this.header.nx + Math.ceil(index[1])]
-        const rx = (1 - x);
-        const ry = (1 - y);
-        const a = rx * ry;
-        const b = x * ry;
-        const c = rx * y;
+        const x = index[1] - Math.floor(index[1]);
+        const y = index[0] - Math.floor(index[0]);
+        const index00 = Math.floor(index[0]) * this.header.nx + Math.floor(index[1]);
+        const index01 = index00 + this.header.nx;
+        const index10 = index00 + 1;
+        const index11 = index00 + this.header.nx + 1
+        const g00 = this.data[index00 < this.data.length ? index00 : this.data.length - 1];
+        const g01 = this.data[index01 < this.data.length ? index01 : this.data.length - 1];
+        const g10 = this.data[index10 < this.data.length ? index10 : this.data.length - 1];
+        const g11 = this.data[index11 < this.data.length ? index11 : this.data.length - 1];
+        const a = (1 - x) * (1 - y);
+        const b = x * (1 - y);
+        const c = (1 - x) * y;
         const d = x * y;
         return g00 * a + g10 * b + g01 * c + g11 * d;
     }
